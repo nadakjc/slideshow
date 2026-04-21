@@ -12,5 +12,6 @@
     <string name="settings_shuffle">셔플</string>
     <string name="settings_loop">반복</string>
     <string name="settings_recursive">하위 폴더 포함</string>
-    <string name="player_placeholder">플레이어는 다음 단계에서 구현됩니다</string>
+    <string name="player_no_folder">폴더가 선택되지 않았습니다</string>
+    <string name="player_empty">이미지가 없습니다</string>
 </resources>
