@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Slideshow</string>
+    <string name="home_title">슬라이드쇼</string>
+    <string name="home_no_folder">폴더를 선택하세요</string>
+    <string name="home_current_folder">현재 폴더</string>
+    <string name="action_pick_folder">폴더 선택</string>
+    <string name="action_start">슬라이드쇼 시작</string>
+    <string name="action_settings">설정</string>
+    <string name="action_back">뒤로</string>
+    <string name="settings_title">설정</string>
+    <string name="settings_interval">간격</string>
+    <string name="settings_shuffle">셔플</string>
+    <string name="settings_loop">반복</string>
+    <string name="settings_recursive">하위 폴더 포함</string>
+    <string name="player_placeholder">플레이어는 다음 단계에서 구현됩니다</string>
+</resources>
