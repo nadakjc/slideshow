@@ -9,6 +9,7 @@ import com.example.slideshow.SlideshowApp
 import com.example.slideshow.data.FolderRepository
 import com.example.slideshow.data.SettingsRepository
 import com.example.slideshow.data.model.SlideshowSettings
+import com.example.slideshow.util.PlayerIndex
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -91,13 +92,7 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     private fun advance(step: Int) {
         val s = _state.value
         if (s.images.isEmpty()) return
-        val last = s.images.lastIndex
-        val raw = s.index + step
-        val newIndex = when {
-            raw in 0..last -> raw
-            config.loop -> ((raw % s.images.size) + s.images.size) % s.images.size
-            else -> s.index.coerceIn(0, last)
-        }
+        val newIndex = PlayerIndex.nextIndex(s.index, s.images.size, step, config.loop)
         if (newIndex == s.index) return
         _state.update { it.copy(index = newIndex) }
         if (s.isPlaying) restartTimer()

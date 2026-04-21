@@ -20,19 +20,9 @@ class FolderRepository(private val appContext: Context) {
         for (child in dir.listFiles()) {
             when {
                 child.isDirectory -> if (recursive) collect(child, true, out)
-                child.isFile && isImage(child.type, child.name) ->
+                child.isFile && ImageFilter.isImage(child.type, child.name) ->
                     out.add((child.name ?: "") to child.uri)
             }
         }
-    }
-
-    private fun isImage(mime: String?, name: String?): Boolean {
-        if (mime != null && mime.startsWith("image/")) return true
-        val ext = name?.substringAfterLast('.', "")?.lowercase() ?: return false
-        return ext in IMAGE_EXTENSIONS
-    }
-
-    private companion object {
-        val IMAGE_EXTENSIONS = setOf("jpg", "jpeg", "png", "webp", "heic", "heif", "gif", "bmp")
     }
 }

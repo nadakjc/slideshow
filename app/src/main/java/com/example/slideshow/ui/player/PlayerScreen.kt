@@ -6,25 +6,37 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import com.example.slideshow.R
 import com.example.slideshow.util.ImmersiveMode
 import com.example.slideshow.util.KeepScreenOn
 
@@ -49,18 +61,50 @@ fun PlayerScreen(
     ) {
         when {
             state.loading -> CircularProgressIndicator(color = Color.White)
-            state.error != null -> Text(
-                text = state.error!!,
-                color = Color.White,
-                modifier = Modifier.padding(24.dp),
-            )
+            state.error != null -> ErrorView(message = state.error!!, onBack = onBack)
             else -> SlideshowStage(state, viewModel)
         }
     }
 }
 
 @Composable
+private fun ErrorView(message: String, onBack: () -> Unit) {
+    Column(
+        modifier = Modifier.padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = message,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onBack) {
+            Text(stringResource(R.string.action_back))
+        }
+    }
+}
+
+@Composable
 private fun SlideshowStage(state: PlayerUiState, viewModel: PlayerViewModel) {
+    val context = LocalContext.current
+    LaunchedEffect(state.index, state.images) {
+        val images = state.images
+        if (images.isEmpty()) return@LaunchedEffect
+        val loader = SingletonImageLoader.get(context)
+        val neighbors = listOf(state.index + 1, state.index - 1)
+            .mapNotNull { idx ->
+                when {
+                    idx in images.indices -> images[idx]
+                    else -> images[((idx % images.size) + images.size) % images.size]
+                }
+            }
+        neighbors.forEach { uri ->
+            loader.enqueue(ImageRequest.Builder(context).data(uri).build())
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
